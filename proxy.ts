@@ -25,14 +25,19 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Nếu chưa login và không phải đang ở trang login -> Đá về login
-  if (!user && !request.nextUrl.pathname.startsWith("/authentication/login")) {
-    return NextResponse.redirect(new URL("/authentication/login", request.url));
-  }
+  const isAuthPage =
+  request.nextUrl.pathname.startsWith("/authentication");
 
-  // Nếu đã login mà lại cố vào trang login -> Đá về dashboard (/)
-  if (user && request.nextUrl.pathname.startsWith("/authentication/login")) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
+if (!user && !isAuthPage) {
+  return NextResponse.redirect(
+    new URL("/authentication/login", request.url)
+  );
+}
+
+// chỉ redirect nếu đang ở auth page
+if (user && isAuthPage) {
+  return NextResponse.redirect(new URL("/", request.url));
+}
 
   return response;
 }
