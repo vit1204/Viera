@@ -22,14 +22,15 @@ export async function createInviteLink() {
     if (existingLink)
       return {
         link: existingLink,
-        message: "Invite link created successfully!",
+        message: "Invite link was created before",
       };
     const data = await prisma.inviteLink.create({
       data: { workspaceId, userId: user.id },
     });
     return { link: data, message: "Invite link created successfully!" };
-  } catch {
-    return { message: "Failed to create invite link." };
+  } catch(error) {
+    console.error(error);
+    return { message: "Failed to create invite link" };
   }
 }
 

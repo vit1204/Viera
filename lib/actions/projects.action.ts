@@ -7,6 +7,7 @@ import { getServerCookie } from "../helper/server-cookie";
 import { checkIsAdmin } from "./workspaceMember.action";
 import { getWorkspaceById } from "./workspaces.action";
 import { prisma } from "../prisma";
+import { toast } from "sonner";
 
 const getCachedProjects = unstable_cache(
   async (workspaceId: string, search?: string) => {
@@ -29,10 +30,10 @@ const getCachedProjects = unstable_cache(
       throw error;
     }
   },
-  ["projects"],
+  ["projects", "workspaceId"],
   {
     tags: ["projects"],
-    revalidate: 300,
+    revalidate: 60,
   },
 );
 
@@ -104,17 +105,20 @@ export async function deleteProject(id: string) {
     const isAdmin = await checkIsAdmin();
     if (!isAdmin)
       return {
-        message: "You cannot access to this workspace.",
+        message: "You cannot delete projects in this workspace.",
         success: false,
       };
     const project = prisma.project.delete({
       where: { id: id },
+    
+
     });
     revalidateTag("projects", "");
     return {
       data: project,
       success: true,
       message: "Project deleted successfully!",
+      
     };
   } catch {
     return { message: "Failed to delete project.", success: false };

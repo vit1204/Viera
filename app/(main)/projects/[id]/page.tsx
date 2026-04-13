@@ -2,7 +2,7 @@ import Board from "../../../../components/svg/Board";
 import Date from "../../../../components/svg/Date";
 import List from "../../../../components/svg/List";
 import { AvatarCircles } from "../../../../components/ui/avatar-circles";
-import { Tabs, TabsList, TabsTrigger } from "../../../../components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../../components/ui/tabs";
 import { getProjectById } from "../../../../lib/actions/projects.action";
 import { getTasks } from "../../../../lib/actions/task.action";
 import formatDate from "../../../../lib/helper/convert-date";
@@ -13,6 +13,9 @@ import TasksList from "./_components/TasksList";
 import dynamic from "next/dynamic";
 import SearchTasksInput from "../../../../components/SearchTasks";
 import TaskCalendar from "./_components/TaskCalendar";
+import { AnalysisTab } from "./_components/AnalysisTab";
+import { Zap } from "lucide-react";
+import { AITaskGeneratorTab } from "./_components/AITaskGen";
 
 
 const FiltersPopover = dynamic(() => import("./_components/FilterTask"), {
@@ -29,6 +32,7 @@ const tabs = [
   { text: "List", value: "list", icon: <List /> },
   { text: "Board", value: "board", icon: <Board /> },
   { text: "Calendar", value: "calendar", icon: <Date /> },
+  { text: "Analyst", value: "analyst", icon: <Zap /> },
 ];
 
 interface IProps {
@@ -104,9 +108,21 @@ const ProjectTask = async ({ params, searchParams }: IProps) => {
             </div>
             <CreateTaskDialog />
           </div>
-          <TasksList data={data} />
-          <KanbanBoard initialTasks={rawData} />
-          <TaskCalendar tasks={rawData} />
+         <TabsContent value="list">
+    <TasksList data={data} />
+  </TabsContent>
+
+  <TabsContent value="board">
+    <KanbanBoard initialTasks={rawData} />
+  </TabsContent>
+
+  <TabsContent value="calendar">
+    <TaskCalendar tasks={rawData} />
+  </TabsContent>
+
+  <TabsContent value="analyst">
+    <AnalysisTab projectId={id} tasks={rawData} />
+  </TabsContent>
         </Tabs>
       </div>
     </div>

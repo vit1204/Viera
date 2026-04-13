@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "../../../../../components/ui/button";
-import { Calendar } from "../../../../../components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../../../../components/ui/dialog";
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -18,26 +18,27 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../../../../components/ui/form";
-import { Input } from "../../../../../components/ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../../../../components/ui/popover";
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../../components/ui/select";
-import { Textarea } from "../../../../../components/ui/textarea";
-import { createTask } from "../../../../../lib/actions/task.action";
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { createTask } from "@/lib/actions/task.action";
 import { findWorkspaceMembers } from "@/lib/actions/workspaceMember.action";
+import { generateTaskFromPrompt } from "@/lib/actions/generate-taskAI";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, Loader } from "lucide-react";
+import { CalendarIcon, Loader, Sparkles } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -54,7 +55,7 @@ const formSchema = z.object({
   assignment: z.array(z.string()).optional(),
   priority: z.enum(priorities),
   status: z.enum(statuses),
-  dueDate: z.date(),
+  dueDate: z.date().optional(),
 });
 
 interface members extends WorkspaceMember {
@@ -64,6 +65,9 @@ interface members extends WorkspaceMember {
 export default function CreateTaskDialog() {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
+  const [showAIPrompt, setShowAIPrompt] = useState(false);
+  const [aiPrompt, setAIPrompt] = useState("");
+  const [aiLoading, setAILoading] = useState(false);
   const [workspaceMembers, setWorkspaceMembers] = useState<
     members[] | null | undefined
   >(null);
@@ -88,6 +92,34 @@ export default function CreateTaskDialog() {
       loadMembers();
     }
   }, [open]);
+
+  const handleAIGenerate = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error("Please describe what you want to create");
+      return;
+    }
+
+    setAILoading(true);
+    try {
+      const generated = await generateTaskFromPrompt(aiPrompt);
+      console.log("[v0] Generated task data:", generated)
+      
+      // Fill form with generated data
+      form.setValue("title", generated.title);
+      form.setValue("description", generated.description);
+      form.setValue("priority", generated.priority);
+      
+      toast.success("Task generated! Review and adjust details as needed");
+      setShowAIPrompt(false);
+      setAIPrompt("");
+    } catch (error) {
+      console.error("[v0] AI generation error:", error)
+      toast.error("Failed to generate task. Make sure AI API key is set.");
+    } finally {
+      setAILoading(false);
+    }
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -96,7 +128,7 @@ export default function CreateTaskDialog() {
       assignment: [],
       priority: "MEDIUM",
       status: "idea",
-      dueDate: new Date(),
+      dueDate: undefined,
     },
   });
 
@@ -106,9 +138,13 @@ export default function CreateTaskDialog() {
       toast.error("Failed to find project.");
       return;
     }
-    const response = await createTask({ ...values, projectId: id.toString() });
+    const response = await createTask({
+      ...values,
+      projectId: id.toString(),
+      dueDate: values.dueDate ? values.dueDate : new Date(),
+    });
     if (response.success) toast.success(response.message);
-    toast.error(response.message);
+    else toast.error(response.message);
     setOpen(false);
   }
 
@@ -121,9 +157,68 @@ export default function CreateTaskDialog() {
         <DialogHeader>
           <DialogTitle>Create Task</DialogTitle>
           <DialogDescription>
-            Fill out the form to create a new task for a project.
+            Fill out the form to create a new task, or use AI to generate from a description.
           </DialogDescription>
         </DialogHeader>
+
+        {/* AI Prompt Section */}
+        {showAIPrompt ? (
+          <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <label className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                Describe your task
+              </label>
+            </div>
+            <Textarea
+              placeholder="e.g., 'Implement Google login and fix password reset email bug'"
+              value={aiPrompt}
+              onChange={(e) => setAIPrompt(e.target.value)}
+              className="min-h-20 bg-white dark:bg-slate-900"
+              disabled={aiLoading}
+            />
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowAIPrompt(false);
+                  setAIPrompt("");
+                }}
+                disabled={aiLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleAIGenerate}
+                disabled={aiLoading || !aiPrompt.trim()}
+              >
+                {aiLoading ? (
+                  <>
+                    <Loader className="w-3 h-3 animate-spin mr-2" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3 h-3 mr-2" />
+                    Generate with AI
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAIPrompt(true)}
+            className="w-full justify-center gap-2"
+          >
+            <Sparkles className="w-4 h-4" />
+            Generate with AI
+          </Button>
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -280,7 +375,7 @@ export default function CreateTaskDialog() {
                       <Calendar
                         mode="single"
                         selected={field.value}
-                        onSelect={(date) => field.onChange(date ?? new Date())}
+                        onSelect={(date) => field.onChange(date)}
                       />
                     </PopoverContent>
                   </Popover>

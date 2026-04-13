@@ -6,6 +6,8 @@ import { parseDate, utcDayRange } from "../helper/convert-date";
 import { assignTask } from "./taskAssignment.action";
 import { getUser } from "./getUser.action";
 import { prisma } from "../prisma";
+import { checkIsAdmin } from "./workspaceMember.action";
+import { check } from "zod";
 
 export const getTasks = unstable_cache(
   async (
@@ -63,39 +65,56 @@ export const getTasks = unstable_cache(
   },
   ["getTasks"],
   {
-    revalidate: 60,
+    revalidate: 10,
     tags: ["tasks"],
   },
 );
 
 export async function updateTask(
+
   id: string,
   data: {
     title: string;
     description?: string;
     status: "todo" | "in_progress" | "done" | "idea" | "in_review";
     priority: "HIGH" | "MEDIUM" | "LOW";
-    dueDate: Date;
+    dueDate?: Date;
   },
 ) {
   try {
+    console.log("Updating task with data:");
     return prisma.task.update({
       where: { id },
-      data: {...data },
+      data: {
+        title: data.title,
+        description: data.description,
+        status: data.status,
+        priority: data.priority,
+        dueDate: data.dueDate,
+       },
     });
   } catch (error) {
     throw error;
   } finally {
-    revalidateTag("tasks", "");
+    revalidateTag("tasks","");
   }
 }
 
 export async function deleteTask(id: string) {
   try {
+    const isAdmin = await checkIsAdmin()
+    if (!isAdmin)   {
+      return {
+        success: false,
+        message: "You cannot delete tasks in this workspace.",
+      };
+    }   
+    else{
     await prisma.task.delete({
       where: { id },
     });
     return { success: true, message: "Task deleted successfully!" };
+    }
   } catch {
     return { success: false, message: "Failed to delete task." };
   } finally {
@@ -120,6 +139,7 @@ export async function createTask(data: {
         priority: data.priority,
         projectId: data.projectId,
         status: data.status,
+        dueDate: data.dueDate,
       },
     });
 

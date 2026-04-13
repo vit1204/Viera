@@ -1,7 +1,7 @@
 import { getWorkspaces } from "../lib/actions/workspaces.action";
 import { getServerCookie, setServerCookie } from "../lib/helper/server-cookie";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Tooltip, TooltipContent } from "./ui/tooltip";
@@ -10,8 +10,11 @@ import WorkspaceItem from "./WorkspaceItem";
 const WorkspacesMenuItems = async () => {
   const workspaces = await getWorkspaces();
   const handleWorkspaceSelect = async (id: string) => {
-    "use server";
+    "use server"
     await setServerCookie("workspaceId", id);
+    revalidateTag("projects", "");
+    revalidateTag("members", "");
+    revalidateTag("tasks", "");
     revalidatePath("/");
   };
   const currentWorkspace = await getServerCookie("workspaceId");

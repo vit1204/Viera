@@ -63,9 +63,9 @@ export const checkIsAdmin = async () => {
   const user = await getUser();
   if (!user) return;
   try {
-    return prisma.workspaceMember.findMany({
-      where: { workspaceId, role: "Admin", userId: user.id },
-      select: { role: true },
+    return prisma.workspaceMember.findFirst({
+      where: { workspaceId:workspaceId, role: "ADMIN", userId: user.id },
+      select: { role:true},
     });
   } catch (error) {
     throw error;
@@ -79,7 +79,7 @@ export const checkIsMember = async () => {
   if (!user) return;
   try {
     return prisma.workspaceMember.findMany({
-      where: { workspaceId, userId: user.id },
+      where: { workspaceId:workspaceId, userId: user.id },
     });
   } catch (error) {
     throw error;

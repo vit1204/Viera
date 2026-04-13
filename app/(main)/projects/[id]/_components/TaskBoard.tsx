@@ -41,6 +41,7 @@ export default function KanbanBoard({
 
   async function onDragEnd(result: DropResult) {
     const { source, destination } = result;
+    
     if (!destination) return;
     if (
       source.droppableId === destination.droppableId &&

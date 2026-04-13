@@ -3,6 +3,7 @@ import SelectWorkspaceCard from "../../components/SelectWorkspaceCard";
 import { getWorkspaces } from "../../lib/actions/workspaces.action";
 import { setServerCookie } from "../../lib/helper/server-cookie";
 import { Plus } from "lucide-react";
+import { revalidateTag, revalidatePath } from "next/cache";
 import Head from "next/head";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -12,6 +13,9 @@ export default async function WorkspaceSelection() {
   const handleWorkspaceSelect = async (id: string) => {
     "use server";
     await setServerCookie("workspaceId", id);
+    revalidateTag("projects", "");
+    revalidateTag("members", "");
+    revalidateTag("tasks", "");
     redirect("/");
   };
   return (

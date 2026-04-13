@@ -2,20 +2,8 @@ import { getTasks } from "../../lib/actions/task.action";
 import { Project } from "@prisma/client";
 
 const ProjectCard = async ({ project }: { project: Project }) => {
-  const openTasks = await getTasks(
-    project.id,
-    undefined,
-    undefined,
-    undefined,
-    "in_progress",
-  );
-  const doneTasks = await getTasks(
-    project.id,
-    undefined,
-    undefined,
-    undefined,
-    "done",
-  );
+  const openTasks = await getTasks(project.id, "in_progress");
+  const doneTasks = await getTasks(project.id, "done");
   return (
     <div className="w-[240px] h-[168px] border relative rounded shadow-xs">
       <div className="absolute bg-blue-200 w-6 rounded-tl rounded-bl h-full top-0 left-0" />

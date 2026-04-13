@@ -12,7 +12,7 @@ import { Input } from "./ui/input";
 import { createInviteLink } from "../lib/actions/inviteLink.action";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { InviteLink } from "../../prisma/src/generated/prisma";
+import { InviteLink } from "@prisma/client";
 import { Loader } from "lucide-react";
 
 const AddMemberDialog = () => {
