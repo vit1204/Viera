@@ -74,6 +74,7 @@ const ProjectTask = async ({ params, searchParams }: IProps) => {
         />
       ),
       actions: <TaskActions task={item} />,
+      taskId: item.id,
     };
   });
   return (

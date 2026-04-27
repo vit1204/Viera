@@ -4,7 +4,7 @@ import { TabsContent } from "../../../../../components/ui/tabs";
 import dynamic from "next/dynamic";
 
 // Lazy imports
-const ReusableTable = dynamic(() => import("../../../../../components/common/Table"), {
+const TasksListWithLinks = dynamic(() => import("./TasksListWithLinks"), {
   ssr: true,
   loading: () => <p>Loading table...</p>,
 });
@@ -23,7 +23,7 @@ const TasksList = async ({ data }: { data: any }) => {
   return (
     <TabsContent value="list">
       <div className="w-full py-6">
-        <ReusableTable data={data} columns={columns} />
+        <TasksListWithLinks data={data} columns={columns} />
       </div>
     </TabsContent>
   );

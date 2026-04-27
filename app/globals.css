@@ -128,3 +128,64 @@
 @utility button {
   @apply flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-button-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors active:scale-95 cursor-pointer whitespace-nowrap;
 }
+
+/* Lexical Editor Styles */
+.editor-root {
+  @apply relative;
+}
+
+.editor-content {
+  @apply outline-none text-foreground;
+}
+
+.editor-paragraph {
+  @apply relative m-0;
+}
+
+.editor-text-bold {
+  @apply font-semibold;
+}
+
+.editor-text-italic {
+  @apply italic;
+}
+
+.editor-text-underline {
+  @apply underline;
+}
+
+.editor-text-strikethrough {
+  @apply line-through;
+}
+
+.editor-heading-h1 {
+  @apply text-2xl font-bold mb-2;
+}
+
+.editor-heading-h2 {
+  @apply text-xl font-bold mb-2;
+}
+
+.editor-heading-h3 {
+  @apply text-lg font-bold mb-2;
+}
+
+.editor-quote {
+  @apply border-l-4 border-primary pl-4 text-foreground/80 italic my-2;
+}
+
+.editor-link {
+  @apply text-primary underline cursor-pointer hover:text-primary/80;
+}
+
+.editor-list-ol {
+  @apply list-decimal list-inside my-2;
+}
+
+.editor-list-ul {
+  @apply list-disc list-inside my-2;
+}
+
+.editor-list-item {
+  @apply my-1;
+}
