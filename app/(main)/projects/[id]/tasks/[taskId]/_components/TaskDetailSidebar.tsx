@@ -26,11 +26,11 @@ interface TaskDetailSidebarProps {
 }
 
 const statusOptions: { value: string; label: string; bgColor: string; textColor: string }[] = [
-  { value: "todo", label: "To Do", bgColor: "bg-slate-50", textColor: "text-slate-700" },
-  { value: "in_progress", label: "In Progress", bgColor: "bg-blue-50", textColor: "text-blue-700" },
-  { value: "in_review", label: "In Review", bgColor: "bg-yellow-50", textColor: "text-yellow-700" },
-  { value: "done", label: "Done", bgColor: "bg-green-50", textColor: "text-green-700" },
-  { value: "idea", label: "Idea", bgColor: "bg-purple-50", textColor: "text-purple-700" },
+  { value: "TODO", label: "To Do", bgColor: "bg-slate-50", textColor: "text-slate-700" },
+  { value: "IN_PROGRESS", label: "In Progress", bgColor: "bg-blue-50", textColor: "text-blue-700" },
+  { value: "IN_REVIEW", label: "In Review", bgColor: "bg-yellow-50", textColor: "text-yellow-700" },
+  { value: "DONE", label: "Done", bgColor: "bg-green-50", textColor: "text-green-700" },
+  { value: "IDEA", label: "Idea", bgColor: "bg-purple-50", textColor: "text-purple-700" },
 ];
 
 const priorityOptions: { value: string; label: string; icon: React.ReactNode }[] = [
@@ -49,7 +49,7 @@ export default function TaskDetailSidebar({
   const currentPriority = priorityOptions.find((p) => p.value === task.priority);
 
   return (
-    <div className="w-80 bg-muted/20 border-l border-border p-6 space-y-6 overflow-y-auto">
+    <div className="w-72 bg-muted/20 border-l border-border p-4 space-y-5 overflow-y-auto shrink-0 max-h-full">
       {/* Status */}
       <div>
         <h3 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
@@ -69,11 +69,11 @@ export default function TaskDetailSidebar({
         </Select>
       </div>
 
-      <Separator className="my-4" />
+      <Separator className="my-2" />
 
       {/* Priority */}
       <div>
-        <h3 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+        <h3 className="text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wider">
           Priority
         </h3>
         <Select
@@ -99,8 +99,7 @@ export default function TaskDetailSidebar({
         </Select>
       </div>
 
-      <Separator className="my-4" />
-
+      <Separator className="my-2" />
       {/* Due Date */}
       <div>
         <h3 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
@@ -128,14 +127,14 @@ export default function TaskDetailSidebar({
         <h3 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
           Assignee
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-1">
           {task.assignment && task.assignment.length > 0 ? (
             task.assignment.map((assign: any) => (
               <div key={assign.id} className="flex items-center gap-2 p-2 rounded bg-accent/30">
                 <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-semibold">
                   {assign.user?.profiles?.username?.[0]?.toUpperCase() || "U"}
                 </div>
-                <span className="text-sm font-medium">{assign.user?.profiles?.username || "Unknown"}</span>
+                <span className="text-sm font-medium">{assign.user?.profiles?.email || "Unknown"}</span>
               </div>
             ))
           ) : (

@@ -78,7 +78,7 @@ const ProjectTask = async ({ params, searchParams }: IProps) => {
     };
   });
   return (
-    <div>
+    <div className="p-10">
       <h1 className="text-muted-foreground text-sm hover:underline cursor-pointer">
         Projects
       </h1>

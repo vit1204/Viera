@@ -28,11 +28,11 @@ export const COLUMN_TITLES: Record<KanbanStatus, string> = {
 };
 
 export const STATUS_MAP: Record<KanbanStatus, task> = {
-  IDEA: "idea",
-  TO_DO: "todo",
-  IN_PROGRESS: "in_progress",
-  IN_REVIEW: "in_review",
-  DONE: "done",
+  IDEA: "IDEA",
+  TO_DO: "TODO",
+  IN_PROGRESS: "IN_PROGRESS",
+  IN_REVIEW: "IN_REVIEW",
+  DONE: "DONE",
 };
 
 export const REVERSE_STATUS_MAP: Record<task, KanbanStatus> = {

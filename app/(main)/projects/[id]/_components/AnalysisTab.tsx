@@ -27,9 +27,9 @@ export function AnalysisTab({ projectId, tasks }: AnalysisTabProps) {
 
     tasks.forEach((task) => {
       // Count by status - normalize status values
-      const status = task.status?.toLowerCase() || "todo";
-      if (status === "done") byStatus.done++;
-      else if (status === "in_progress" || status === "in progress") byStatus.inProgress++;
+      const status = task.status?.toUpperCase() || "TODO";
+      if (status === "DONE") byStatus.done++;
+      else if (status === "IN_PROGRESS" || status === "IN PROGRESS") byStatus.inProgress++;
       else byStatus.todo++;
 
       // Count by priority

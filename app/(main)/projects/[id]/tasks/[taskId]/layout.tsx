@@ -4,7 +4,7 @@ export default function TaskDetailLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="w-screen h-screen overflow-hidden bg-background">
+    <div className="w-full h-full overflow-hidden bg-background">
       {children}
     </div>
   );

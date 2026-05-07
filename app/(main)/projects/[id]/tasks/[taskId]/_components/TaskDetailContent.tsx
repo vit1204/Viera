@@ -27,7 +27,7 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
       await updateTask(task.id, {
         title: task.title,
         description: task.description || "",
-        status: newStatus,
+        status: newStatus as "TODO" | "IN_PROGRESS" | "DONE" | "IN_REVIEW" | "IDEA",
         priority: task.priority,
         dueDate: task.dueDate,
       });
@@ -47,7 +47,7 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
         title: task.title,
         description: task.description || "",
         status: task.status,
-        priority: newPriority,
+        priority: newPriority as "LOW" | "MEDIUM" | "HIGH",
         dueDate: task.dueDate,
       });
       setTask({ ...task, priority: newPriority as any });
@@ -80,11 +80,11 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex w-full h-full gap-0 bg-background overflow-hidden">
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden border-r border-border min-w-0">
         {/* Header */}
-        <div className="px-8 py-6 border-b border-border">
+        <div className="px-6 py-3 border-b border-border shrink-0">
           <TaskDetailHeader
             task={task}
             onStatusChange={handleStatusChange}
@@ -94,7 +94,7 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto">
-          <div className="px-8 py-6 space-y-8 max-w-4xl">
+          <div className="px-6 py-4 space-y-6 max-w-4xl">
             {/* Description Section */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -215,7 +215,7 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
       />
 
       {/* Activity Panel */}
-      <TaskActivity taskId={task.id} />
+      {/* <TaskActivity taskId={task.id} /> */}
     </div>
   );
 }

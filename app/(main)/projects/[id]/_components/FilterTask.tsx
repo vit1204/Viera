@@ -19,7 +19,7 @@ import {
 } from "../../../../../components/ui/select";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 
-type Status = "todo" | "in_progress" | "done" | "idea" | "in_review";
+type Status = "TODO" | "IN PROGRESS" | "DONE" | "IDEA" | "IN REVIEW";
 type Priority = "HIGH" | "MEDIUM" | "LOW";
 
 function toISODateOnly(d: Date | null | undefined) {
@@ -84,11 +84,11 @@ export default function FiltersPopover() {
               <SelectValue placeholder="Any status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todo">todo</SelectItem>
-              <SelectItem value="in_progress">in_progress</SelectItem>
-              <SelectItem value="done">done</SelectItem>
-              <SelectItem value="idea">idea</SelectItem>
-              <SelectItem value="in_review">in_review</SelectItem>
+              <SelectItem value="TODO">TODO</SelectItem>
+              <SelectItem value="IN PROGRESS">IN_PROGRESS</SelectItem>
+              <SelectItem value="DONE">DONE</SelectItem>
+              <SelectItem value="IDEA">IDEA</SelectItem>
+              <SelectItem value="IN REVIEW">IN_REVIEW</SelectItem>
             </SelectContent>
           </Select>
         </div>
