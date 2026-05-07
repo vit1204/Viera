@@ -246,7 +246,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props}>
-      <SidebarContent className="gap-0 mt-12 p-2">
+      <SidebarContent className="gap-0 mt-2 p-2 overflow-x-hidden">
         {/* FOR YOU */}
         <Link href="/">
           <SidebarMenu>

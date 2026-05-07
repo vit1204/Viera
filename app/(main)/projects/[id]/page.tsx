@@ -74,10 +74,11 @@ const ProjectTask = async ({ params, searchParams }: IProps) => {
         />
       ),
       actions: <TaskActions task={item} />,
+      taskId: item.id,
     };
   });
   return (
-    <div>
+    <div className="p-10">
       <h1 className="text-muted-foreground text-sm hover:underline cursor-pointer">
         Projects
       </h1>

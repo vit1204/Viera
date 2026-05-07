@@ -7,12 +7,12 @@ export default async function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <main>
+    <main className="h-screen overflow-scroll">
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className="flex flex-col w-full h-full overflow-hidden">
           <Header />
-          <div className="mt-12 p-10 text-foreground font-semibold border-border">
+          <div className="flex-1 text-foreground font-semibold border-border">
             {children}
           </div>
         </SidebarInset>

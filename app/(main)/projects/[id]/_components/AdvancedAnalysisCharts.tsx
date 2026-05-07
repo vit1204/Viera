@@ -142,7 +142,7 @@ export function AdvancedAnalysisCharts({ data }: AdvancedAnalysisChartsProps) {
                 <BarChart data={priorityData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
-                  <YAxis />
+                  <YAxis allowDecimals={false} />
                   <Tooltip />
                   <Bar dataKey="value" fill="#8884d8" radius={[8, 8, 0, 0]}>
                     {priorityData.map((entry, index) => (
@@ -171,7 +171,7 @@ export function AdvancedAnalysisCharts({ data }: AdvancedAnalysisChartsProps) {
                   margin={{ top: 5, right: 30, left: 100 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
+                  <XAxis type="number" allowDecimals={false} />
                   <YAxis dataKey="name" type="category" width={95} />
                   <Tooltip />
                   <Bar dataKey="tasks" fill="#8b5cf6" radius={[0, 8, 8, 0]} />
@@ -202,7 +202,7 @@ export function AdvancedAnalysisCharts({ data }: AdvancedAnalysisChartsProps) {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-sm font-medium text-muted-foreground">In Progress</div>
+              <div className="text-sm font-medium text-muted-foreground">In Progress thanhviet</div>
               <div className="text-2xl font-bold text-blue-600">{byStatus.inProgress}</div>
               <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                 <div

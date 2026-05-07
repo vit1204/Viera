@@ -1,0 +1,118 @@
+"use client";
+
+import { Badge } from "../../../../../../../components/ui/badge";
+import { Button } from "../../../../../../../components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../../../../../components/ui/select";
+import { ChevronDown, Link2, Share2 } from "lucide-react";
+import { useState } from "react";
+
+interface TaskDetailHeaderProps {
+  task: any;
+  onStatusChange: (status: any) => void;
+  onPriorityChange: (priority: any) => void;
+}
+
+const statusOptions: { value: string; label: string; color: string }[] = [
+  { value: "TODO", label: "To Do", color: "bg-slate-100" },
+  { value: "IN_PROGRESS", label: "In Progress", color: "bg-blue-100" },
+  { value: "IN_REVIEW", label: "In Review", color: "bg-yellow-100" },
+  { value: "DONE", label: "Done", color: "bg-green-100" },
+  { value: "IDEA", label: "Idea", color: "bg-purple-100" },
+];
+
+const priorityOptions: { value: string; label: string }[] = [
+  { value: "LOW", label: "Low" },
+  { value: "MEDIUM", label: "Medium" },
+  { value: "HIGH", label: "High" },
+];
+
+export default function TaskDetailHeader({
+  task,
+  onStatusChange,
+  onPriorityChange,
+}: TaskDetailHeaderProps) {
+  const currentStatus = statusOptions.find((s) => s.value === task.status);
+  const currentPriority = priorityOptions.find((p) => p.value === task.priority);
+
+  return (
+   <div className="flex items-start justify-between gap-4 pb-2">
+      <div className="flex items-start gap-3 flex-1 min-w-0">
+        <div className="flex flex-col gap-1 flex-1 min-w-0">
+          <span className="text-xs text-muted-foreground font-medium uppercase">
+            Task
+          </span>
+          <h1 className="text-xl font-bold line-clamp-2">{task.title}</h1>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-1 shrink-0">
+        <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
+          <Link2 className="w-4 h-4" />
+        </Button>
+        <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
+          <Share2 className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export function TaskStatusDropdown({
+  task,
+  onStatusChange,
+}: {
+  task: any;
+  onStatusChange: (status: string) => void;
+}) {
+  const currentStatus = statusOptions.find((s) => s.value === task.status);
+
+  return (
+    <Select value={task.status} onValueChange={(value: string) => onStatusChange(value)}>
+      <SelectTrigger className="w-32 bg-transparent border-0 hover:bg-accent rounded-md px-2 py-1">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {statusOptions.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${option.color}`} />
+              {option.label}
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+export function TaskPriorityDropdown({
+  task,
+  onPriorityChange,
+}: {
+  task: any;
+  onPriorityChange: (priority: string) => void;
+}) {
+  return (
+    <Select
+      value={task.priority}
+      onValueChange={(value: string) => onPriorityChange(value)}
+    >
+      <SelectTrigger className="w-24 bg-transparent border-0 hover:bg-accent rounded-md px-2 py-1">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {priorityOptions.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}

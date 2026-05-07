@@ -44,16 +44,18 @@ const Projects = async ({ searchParams }: ProjectsProps) => {
     url: <ProjectUrl project={item} />,
   }));
   return (
-    <div className="flex flex-1 flex-wrap">
-      <h1 className="w-full text-2xl font-semibold text-foreground leading-0 pb-8 flex justify-between items-center">
-        Projects
-        <Link href="create-project">
-          <button className="button gap-2">Create project</button>
-        </Link>
-      </h1>
-      <SearchProjectsInput />
-      <div className="py-4 w-full">
-        <ReusableTable columns={columns} data={data} />
+    <div className="flex-1 overflow-auto w-full">
+      <div className="p-6 max-w-7xl mx-auto w-full">
+        <h1 className="w-full text-2xl font-semibold text-foreground pb-6 flex justify-between items-center">
+          Projects
+          <Link href="create-project">
+            <button className="button gap-2">Create project</button>
+          </Link>
+        </h1>
+        <SearchProjectsInput />
+        <div className="py-4 w-full">
+          <ReusableTable columns={columns} data={data} />
+        </div>
       </div>
     </div>
   );
