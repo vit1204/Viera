@@ -82,8 +82,8 @@ export function AITaskGeneratorTab() {
         description: fullDescription,
         priority: task.priority,
         projectId: projectId,
-        status: "TODO" as any,
-        dueDate: task.dueDate ? new Date(task.dueDate) : new Date(), // Set dueDate mặc định là ngày hôm nay
+        status: "todo" as any,
+        dueDate: task.dueDate ? new Date(task.dueDate) : undefined, // Set dueDate mặc định là ngày hôm nay
       });
 
       if (response?.success) {

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import LexicalEditorComponent from "./LexicalEditor";
 import TaskDetailHeader from "./TaskDetailHeader";
 import TaskDetailSidebar from "./TaskDetailSidebar";
-import TaskActivity from "./TaskActivity";
+// import TaskActivity from "./TaskActivity";
 import { Button } from "../../../../../../../components/ui/button";
 import { Separator } from "../../../../../../../components/ui/separator";
 import { Link, Paperclip, MessageSquare } from "lucide-react";
@@ -27,7 +27,7 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
       await updateTask(task.id, {
         title: task.title,
         description: task.description || "",
-        status: newStatus as "TODO" | "IN_PROGRESS" | "DONE" | "IN_REVIEW" | "IDEA",
+        status: newStatus,
         priority: task.priority,
         dueDate: task.dueDate,
       });
@@ -47,7 +47,7 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
         title: task.title,
         description: task.description || "",
         status: task.status,
-        priority: newPriority as "LOW" | "MEDIUM" | "HIGH",
+        priority: newPriority,
         dueDate: task.dueDate,
       });
       setTask({ ...task, priority: newPriority as any });
@@ -80,11 +80,11 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
   };
 
   return (
-    <div className="flex w-full h-full gap-0 bg-background overflow-hidden">
+    <div className="flex w-full h-full bg-background gap-0">
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden border-r border-border min-w-0">
         {/* Header */}
-        <div className="px-6 py-3 border-b border-border shrink-0">
+        <div className="px-6 py-4 border-b border-border flex-shrink-0">
           <TaskDetailHeader
             task={task}
             onStatusChange={handleStatusChange}
@@ -94,7 +94,7 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto">
-          <div className="px-6 py-4 space-y-6 max-w-4xl">
+          <div className="px-6 py-4 space-y-6 max-w-2xl">
             {/* Description Section */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -214,7 +214,7 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
         onDueDateChange={(date) => console.log(date)}
       />
 
-      {/* Activity Panel */}
+      {/* Activity Panel - Commented Out */}
       {/* <TaskActivity taskId={task.id} /> */}
     </div>
   );

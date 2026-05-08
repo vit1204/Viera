@@ -76,15 +76,14 @@ export async function updateTask(
   data: {
     title: string;
     description?: string;
-    status: task;
-    priority: Priority;
+    status: "todo" | "in_progress" | "done" | "idea" | "in_review";
+    priority: "HIGH" | "MEDIUM" | "LOW";
     dueDate?: Date;
-    assignment?: string[];
   },
 ) {
   try {
     console.log("Updating task with data:");
-    await prisma.task.update({
+    return prisma.task.update({
       where: { id },
       data: {
         title: data.title,
@@ -94,14 +93,10 @@ export async function updateTask(
         dueDate: data.dueDate,
        },
     });
-
-    if (data.assignment) {
-      await Promise.all(data.assignment.map((item) => assignTask(id, item)));
-    }
-    revalidateTag("tasks", "");
-    return { success: true, message: "Task updated successfully!" };
   } catch (error) {
-    return { success: false, message: "Failed to update task." };
+    throw error;
+  } finally {
+    revalidateTag("tasks","");
   }
 }
 
@@ -148,13 +143,13 @@ export async function createTask(data: {
       },
     });
 
-    if (data.assignment && data.assignment.length > 0) {
+    if (data.assignment) {
       await Promise.all(data.assignment.map((item) => assignTask(id, item)));
     }
+
     revalidateTag("tasks", "");
     return { success: true, message: "Task created successfully!" };
-  } catch (error) {
-    console.error("Error creating task:", error);
+  } catch {
     return { success: false, message: "Failed to create task." };
   }
 }

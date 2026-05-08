@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -13,14 +12,13 @@ import {
 import { LinkNode, AutoLinkNode } from "@lexical/link";
 import { EditorState } from "lexical";
 import type { LexicalEditor } from "lexical";
-import { $getRoot, $createParagraphNode, $createTextNode } from "lexical";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 interface LexicalEditorProps {
   initialValue?: string;
   onChange?: (content: string) => void;
   readOnly?: boolean;
 }
+
 const theme = {
   root: "editor-root relative text-foreground",
   content: "editor-content p-4 min-h-32 outline-none",
@@ -34,34 +32,8 @@ const theme = {
   link: "text-primary underline cursor-pointer hover:text-primary/80",
 };
 
-// Plugin để set initial value
-function InitializeEditorPlugin({ initialValue }: { initialValue: string }) {
-  const [editor] = useLexicalComposerContext();
-  const hasInitialized = useRef(false);
-
-  useEffect(() => {
-    if (!hasInitialized.current && initialValue) {
-      editor.update(() => {
-        const root = $getRoot();
-        const currentText = root.getTextContent();
-        
-        // Chỉ set initial value nếu editor trống
-        if (!currentText.trim()) {
-          root.clear();
-          const paragraph = $createParagraphNode();
-          paragraph.append($createTextNode(initialValue));
-          root.append(paragraph);
-        }
-      });
-      hasInitialized.current = true;
-    }
-  }, [editor]);
-
-  return null;
-}
-
 export default function LexicalEditorComponent({
-  initialValue = "",
+  initialValue,
   onChange,
   readOnly = false,
 }: LexicalEditorProps) {
@@ -75,10 +47,11 @@ export default function LexicalEditorComponent({
     editable: !readOnly,
   };
 
-  const handleChange = (editorState: EditorState, _editor: LexicalEditor) => {
+  const handleChange = (editorState: EditorState, editor: LexicalEditor) => {
     editorState.read(() => {
-      const root = $getRoot();
-      const text = root.getTextContent();
+      const text = editor.getEditorState().read(() => {
+        return editor.getRootElement()?.textContent || "";
+      });
       onChange?.(text);
     });
   };
@@ -103,7 +76,6 @@ export default function LexicalEditorComponent({
         />
         <HistoryPlugin />
         <OnChangePlugin onChange={handleChange} />
-        <InitializeEditorPlugin initialValue={initialValue} />
       </div>
     </LexicalComposer>
   );

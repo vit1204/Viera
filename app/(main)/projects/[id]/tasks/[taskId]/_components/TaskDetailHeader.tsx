@@ -19,11 +19,11 @@ interface TaskDetailHeaderProps {
 }
 
 const statusOptions: { value: string; label: string; color: string }[] = [
-  { value: "TODO", label: "To Do", color: "bg-slate-100" },
-  { value: "IN_PROGRESS", label: "In Progress", color: "bg-blue-100" },
-  { value: "IN_REVIEW", label: "In Review", color: "bg-yellow-100" },
-  { value: "DONE", label: "Done", color: "bg-green-100" },
-  { value: "IDEA", label: "Idea", color: "bg-purple-100" },
+  { value: "todo", label: "To Do", color: "bg-slate-100" },
+  { value: "in_progress", label: "In Progress", color: "bg-blue-100" },
+  { value: "in_review", label: "In Review", color: "bg-yellow-100" },
+  { value: "done", label: "Done", color: "bg-green-100" },
+  { value: "idea", label: "Idea", color: "bg-purple-100" },
 ];
 
 const priorityOptions: { value: string; label: string }[] = [
@@ -41,17 +41,17 @@ export default function TaskDetailHeader({
   const currentPriority = priorityOptions.find((p) => p.value === task.priority);
 
   return (
-   <div className="flex items-start justify-between gap-4 pb-2">
-      <div className="flex items-start gap-3 flex-1 min-w-0">
-        <div className="flex flex-col gap-1 flex-1 min-w-0">
-          <span className="text-xs text-muted-foreground font-medium uppercase">
+    <div className="flex items-center justify-between pb-3 border-b border-border gap-4">
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div className="flex flex-col gap-0 flex-1 min-w-0">
+          <span className="text-xs text-muted-foreground font-medium">
             Task
           </span>
-          <h1 className="text-xl font-bold line-clamp-2">{task.title}</h1>
+          <h1 className="text-2xl font-bold break-words">{task.title}</h1>
         </div>
       </div>
 
-      <div className="flex items-center gap-1 shrink-0">
+      <div className="flex items-center gap-1 flex-shrink-0">
         <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
           <Link2 className="w-4 h-4" />
         </Button>

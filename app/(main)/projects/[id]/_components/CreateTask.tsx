@@ -74,6 +74,7 @@ export default function CreateTaskDialog() {
   const [loading, setLoading] = useState(false);
 
  useEffect(() => {
+  
   async function loadMembers() {
       try {
         const members = await findWorkspaceMembers();
@@ -141,19 +142,12 @@ export default function CreateTaskDialog() {
       ...values,
       projectId: id.toString(),
       dueDate: values.dueDate ? values.dueDate : new Date(),
-      status: values.status.toLowerCase() as any,
     });
     if (response.success) toast.success(response.message);
     else toast.error(response.message);
     setOpen(false);
   }
 
-  function formatStatusDisplay(s: string): string {
-    return s
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
-  }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -284,7 +278,7 @@ export default function CreateTaskDialog() {
                       ) : workspaceMembers && workspaceMembers.length > 0 ? (
                         workspaceMembers.map((user) => {
                           const userId = user.user.profiles?.id || user.user.id;
-                          const email = user.user.profiles?.email || user.user.email || "Unknown user";
+                          const email = user.user.profiles?.email || "Unknown user";
                           return (
                             <SelectItem key={user.id} value={userId}>
                               {email}
@@ -345,7 +339,7 @@ export default function CreateTaskDialog() {
                     <SelectContent>
                       {statuses.map((s) => (
                         <SelectItem key={s} value={s}>
-                          {formatStatusDisplay(s)}
+                          {s}
                         </SelectItem>
                       ))}
                     </SelectContent>

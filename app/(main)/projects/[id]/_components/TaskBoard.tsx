@@ -34,7 +34,10 @@ export default function KanbanBoard({
   };
 
   for (const t of tasks) {
-    byCol[REVERSE_STATUS_MAP[t.status]].push(t);
+    const kanbanStatus = REVERSE_STATUS_MAP[t.status as keyof typeof REVERSE_STATUS_MAP];
+    if (kanbanStatus && byCol[kanbanStatus]) {
+      byCol[kanbanStatus].push(t);
+    }
   }
 
   const columns = byCol;

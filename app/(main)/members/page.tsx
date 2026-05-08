@@ -11,17 +11,16 @@ const Members = async ({ searchParams }: ProjectsProps) => {
   const members = await findWorkspaceMembers(params?.search);
 
   return (
-    <div className="flex-1 overflow-auto w-full">
-      <div className="p-6 max-w-7xl mx-auto">
-        <h1 className="w-full text-2xl font-semibold text-foreground pb-6 flex justify-between items-center">
-          Members
-          <AddMemberDialog />
-        </h1>
-        <SearchMembersInput />
-        <h1 className="mt-8 text-sm font-medium text-muted-foreground uppercase tracking-wider">People you work with</h1>
-        <div className="w-full mt-6 flex gap-4 flex-wrap">
-          {members && members.length > 0 ? (
-            members?.map((item) => (
+    <div className="flex flex-1 flex-wrap">
+      <h1 className="w-full text-2xl font-semibold text-foreground leading-0 pb-8 flex justify-between items-center">
+        Members
+        <AddMemberDialog />
+      </h1>
+      <SearchMembersInput />
+      <h1 className="mt-10 text-sm w-full">People you work with</h1>
+      <div className="w-full mt-5 flex gap-4">
+        {members && members.length > 0 ? (
+          members?.map((item) => (
             <div
               key={item.id}
               className="w-[181px] h-[221px] rounded-md border p-3 flex flex-col justify-start items-center gap-y-2"
@@ -34,9 +33,8 @@ const Members = async ({ searchParams }: ProjectsProps) => {
             </div>
           ))
         ) : (
-          <p className="text-muted-foreground">Member not found.</p>
+          <h1>Member not found.</h1>
         )}
-        </div>
       </div>
     </div>
   );

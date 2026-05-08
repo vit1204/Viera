@@ -16,7 +16,7 @@ const Header = async () => {
   const email = user?.email;
 
   return (
-    <header className="bg-background flex h-12 items-center gap-2 border-b px-4 justify-between w-full shrink-0">
+    <header className="bg-background fixed z-10 top-0 flex h-12 inset-0 items-center gap-2 border-b px-4 justify-between w-full">
       <div className="flex gap-2 items-center">
         <SidebarTrigger />
         <WorkspacesMenuItems />

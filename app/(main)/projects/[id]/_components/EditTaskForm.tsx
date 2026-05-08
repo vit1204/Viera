@@ -4,10 +4,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, Loader } from "lucide-react";
-import { toast } from "sonner";
+import { CalendarIcon } from "lucide-react";
+import { toast } from "sonner"; // Import thêm thư viện toast
 import { Task } from "@prisma/client";
-import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,8 +34,6 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 
 import { updateTask } from "@/lib/actions/task.action";
-import { findWorkspaceMembers } from "@/lib/actions/workspaceMember.action";
-import { WorkspaceMember, users } from "@prisma/client";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -44,41 +41,11 @@ const schema = z.object({
   status: z.enum(["todo", "in_progress", "done", "idea", "in_review"]),
   priority: z.enum(["HIGH", "MEDIUM", "LOW"]),
   dueDate: z.date().optional(),
-  assignment: z.array(z.string()).optional(),
 });
 
 type FormData = z.infer<typeof schema>;
 
-// Format status for display
-const formatStatusDisplay = (status: string): string => {
-  return status.replace(/_/g, " ").toUpperCase();
-};
-
-interface members extends WorkspaceMember {
-  user: users & { profiles: { id: string; username?: string; email?: string } | null };
-}
-
 function EditTaskForm({ task }: { task: Task }) {
-  const [workspaceMembers, setWorkspaceMembers] = useState<members[] | null>(null);
-  const [loadingMembers, setLoadingMembers] = useState(false);
-
-  useEffect(() => {
-    async function loadMembers() {
-      try {
-        setLoadingMembers(true);
-        const members = await findWorkspaceMembers();
-        setWorkspaceMembers(members as members[]);
-      } catch (err) {
-        console.error(err);
-        toast.error("Không tải được danh sách thành viên");
-      } finally {
-        setLoadingMembers(false);
-      }
-    }
-
-    loadMembers();
-  }, []);
-
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -86,7 +53,7 @@ function EditTaskForm({ task }: { task: Task }) {
       description: task.description ?? "",
       status: task.status as any,
       priority: task.priority as any,
-      assignment: [],
+      // Fix lỗi Date string từ Server Component
       dueDate: task.dueDate ? new Date(task.dueDate) : undefined, 
     },
   });
@@ -137,48 +104,7 @@ function EditTaskForm({ task }: { task: Task }) {
           )}
         />
 
-        {/* Assignment */}
-        <FormField
-          control={form.control}
-          name="assignment"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Assign To</FormLabel>
-              <Select
-                onValueChange={(value) => field.onChange([value])}
-                value={field.value?.[0] || ""}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a member" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {loadingMembers ? (
-                    <div className="flex items-center justify-center py-2">
-                      <Loader className="h-4 w-4 animate-spin" />
-                    </div>
-                  ) : workspaceMembers && workspaceMembers.length > 0 ? (
-                    workspaceMembers.map((user) => {
-                      const userId = user.user.profiles?.id || user.user.id;
-                      const email = user.user.profiles?.email || "Unknown user";
-                      return (
-                        <SelectItem key={user.id} value={userId}>
-                          {email}
-                        </SelectItem>
-                      );
-                    })
-                  ) : (
-                    <div className="py-2 px-2 text-sm text-gray-500">
-                      No members available
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Status */}
         <FormField
           control={form.control}
           name="status"
@@ -192,11 +118,11 @@ function EditTaskForm({ task }: { task: Task }) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="TODO">{formatStatusDisplay("TODO")}</SelectItem>
-                  <SelectItem value="IN_PROGRESS">{formatStatusDisplay("IN_PROGRESS")}</SelectItem>
-                  <SelectItem value="DONE">{formatStatusDisplay("DONE")}</SelectItem>
-                  <SelectItem value="IDEA">{formatStatusDisplay("IDEA")}</SelectItem>
-                  <SelectItem value="IN_REVIEW">{formatStatusDisplay("IN_REVIEW")}</SelectItem>
+                  <SelectItem value="todo">todo</SelectItem>
+                  <SelectItem value="in_progress">in_progress</SelectItem>
+                  <SelectItem value="done">done</SelectItem>
+                  <SelectItem value="idea">idea</SelectItem>
+                  <SelectItem value="in_review">in_review</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
