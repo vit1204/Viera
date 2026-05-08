@@ -96,7 +96,7 @@ export async function updateTask(
   } catch (error) {
     throw error;
   } finally {
-    revalidateTag("tasks","");
+    revalidateTag("tasks");
   }
 }
 

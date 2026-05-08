@@ -20,80 +20,105 @@ export default function KanbanBoard({
   initialTasks: KanTaskType[];
 }) {
   const [tasks, setTasks] = useState<KanTaskType[]>(initialTasks);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setTasks(initialTasks);
   }, [initialTasks]);
 
-  const byCol: Record<KanbanStatus, KanTaskType[]> = {
-    IDEA: [],
-    TO_DO: [],
-    IN_PROGRESS: [],
-    IN_REVIEW: [],
-    DONE: [],
+  // Build columns from current tasks state
+  const buildColumns = (taskList: KanTaskType[]): Record<KanbanStatus, KanTaskType[]> => {
+    const byCol: Record<KanbanStatus, KanTaskType[]> = {
+      IDEA: [],
+      TO_DO: [],
+      IN_PROGRESS: [],
+      IN_REVIEW: [],
+      DONE: [],
+    };
+
+    for (const t of taskList) {
+      const kanbanStatus = REVERSE_STATUS_MAP[t.status as keyof typeof REVERSE_STATUS_MAP];
+      if (kanbanStatus && byCol[kanbanStatus]) {
+        byCol[kanbanStatus].push(t);
+      }
+    }
+    return byCol;
   };
 
-  for (const t of tasks) {
-    const kanbanStatus = REVERSE_STATUS_MAP[t.status as keyof typeof REVERSE_STATUS_MAP];
-    if (kanbanStatus && byCol[kanbanStatus]) {
-      byCol[kanbanStatus].push(t);
-    }
-  }
-
-  const columns = byCol;
+  const columns = buildColumns(tasks);
 
   async function onDragEnd(result: DropResult) {
-    const { source, destination } = result;
-    
-    if (!destination) return;
+    const { source, destination, draggableId } = result;
+
+    // If dropped outside a valid area
+    if (!destination) {
+      return;
+    }
+
+    // If dropped in same position
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
-    )
+    ) {
       return;
+    }
 
-    // optimistic UI update
-    setTasks((prev) => {
-      const copy = Array.from(prev);
-      const taskIndex = copy.findIndex((t) => t.id === result.draggableId);
-      if (taskIndex === -1) return prev;
+    // Get the task that was dragged
+    const task = tasks.find((t) => t.id === draggableId);
+    if (!task) {
+      console.log("[v0] Task not found:", draggableId);
+      return;
+    }
 
-      const newStatus = destination.droppableId as KanbanStatus;
-      const moved = { ...copy[taskIndex], status: STATUS_MAP[newStatus] };
-      copy[taskIndex] = moved;
-      return [...copy];
-    });
+    // Get new status
+    const newKanbanStatus = destination.droppableId as KanbanStatus;
+    const newPrismaStatus = STATUS_MAP[newKanbanStatus];
 
-    // persist to DB
-    const kanbanStatus = destination.droppableId as KanbanStatus;
-    const prismaStatus = STATUS_MAP[kanbanStatus];
-    const task = tasks.find((t) => t.id === result.draggableId);
+    // Don't update if status hasn't changed
+    if (task.status === newPrismaStatus) {
+      return;
+    }
 
-    if (!task) return;
+    // Optimistic UI update
+    const updatedTasks = tasks.map((t) =>
+      t.id === draggableId ? { ...t, status: newPrismaStatus } : t
+    );
+    setTasks(updatedTasks);
 
+    // Persist to DB
+    setLoading(true);
     try {
       await updateTask(task.id, {
         title: task.title,
         description: task.description ?? undefined,
-        status: prismaStatus,
+        status: newPrismaStatus,
         priority: task.priority,
         dueDate: task.dueDate,
       });
 
-      toast.success(`Task moved to ${COLUMN_TITLES[kanbanStatus]}`);
-    } catch {
-      toast.error("Failed to update task");
+      toast.success(`Task moved to ${COLUMN_TITLES[newKanbanStatus]}`);
+    } catch (error) {
+      console.error("[v0] Failed to update task:", error);
+      // Revert optimistic update on error
+      setTasks(tasks);
+      toast.error("Failed to move task");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <TabsContent value="board">
-      <div className="w-full overflow-x-scroll">
+      <div className="w-full overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
-          <div className="flex gap-4 w-[1650px] pb-20">
-            {COLUMN_ORDER.map((c) => (
-              <div key={c}>
-                <Column id={c} title={COLUMN_TITLES[c]} tasks={columns[c]} />
+          <div className="flex gap-4 w-full min-w-max p-4 pb-20">
+            {COLUMN_ORDER.map((columnStatus) => (
+              <div key={columnStatus}>
+                <Column
+                  id={columnStatus}
+                  title={COLUMN_TITLES[columnStatus]}
+                  tasks={columns[columnStatus]}
+                />
               </div>
             ))}
           </div>
