@@ -88,20 +88,28 @@ export default function KanbanBoard({
     // Persist to DB
     setLoading(true);
     try {
-      await updateTask(task.id, {
+      console.log("[v0] Calling updateTask with:", {
+        id: task.id,
         title: task.title,
-        description: task.description ?? undefined,
         status: newPrismaStatus,
         priority: task.priority,
+      });
+
+      const result = await updateTask(task.id, {
+        title: task.title,
+        description: task.description ?? undefined,
+        status: newPrismaStatus as any,
+        priority: task.priority as any,
         dueDate: task.dueDate,
       });
 
+      console.log("[v0] updateTask result:", result);
       toast.success(`Task moved to ${COLUMN_TITLES[newKanbanStatus]}`);
     } catch (error) {
       console.error("[v0] Failed to update task:", error);
       // Revert optimistic update on error
       setTasks(tasks);
-      toast.error("Failed to move task");
+      toast.error(`Failed to move task: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setLoading(false);
     }

@@ -71,7 +71,6 @@ export const getTasks = unstable_cache(
 );
 
 export async function updateTask(
-
   id: string,
   data: {
     title: string;
@@ -82,8 +81,8 @@ export async function updateTask(
   },
 ) {
   try {
-    console.log("Updating task with data:");
-    return prisma.task.update({
+    console.log("[v0] Updating task:", id, "with status:", data.status);
+    const result = await prisma.task.update({
       where: { id },
       data: {
         title: data.title,
@@ -91,9 +90,12 @@ export async function updateTask(
         status: data.status,
         priority: data.priority,
         dueDate: data.dueDate,
-       },
+      },
     });
+    console.log("[v0] Task updated successfully:", result.id, "new status:", result.status);
+    return result;
   } catch (error) {
+    console.error("[v0] Error updating task:", error);
     throw error;
   } finally {
     revalidateTag("tasks");
@@ -118,7 +120,7 @@ export async function deleteTask(id: string) {
   } catch {
     return { success: false, message: "Failed to delete task." };
   } finally {
-    revalidateTag("tasks", "");
+    revalidateTag("tasks");
   }
 }
 
@@ -147,7 +149,7 @@ export async function createTask(data: {
       await Promise.all(data.assignment.map((item) => assignTask(id, item)));
     }
 
-    revalidateTag("tasks", "");
+    revalidateTag("tasks");
     return { success: true, message: "Task created successfully!" };
   } catch {
     return { success: false, message: "Failed to create task." };
