@@ -1,15 +1,5 @@
 import { KanbanStatus } from "../types";
-import { task } from "@prisma/client";
-
-export const API_BASE_URL = "";
-
-export const API_OPTIONS = {
-  method: "GET",
-  headers: {
-    accept: "application/json",
-    Authorization: `Bearer `,
-  },
-};
+import { task } from "@prisma/client";   // hoặc tên model của bạn
 
 export const COLUMN_ORDER: KanbanStatus[] = [
   "IDEA",
@@ -20,22 +10,24 @@ export const COLUMN_ORDER: KanbanStatus[] = [
 ];
 
 export const COLUMN_TITLES: Record<KanbanStatus, string> = {
-  IDEA: "IDEA",
-  TO_DO: "TO DO",
-  IN_PROGRESS: "IN PROGRESS",
-  IN_REVIEW: "IN REVIEW",
-  DONE: "DONE",
+  IDEA: "Idea",
+  TO_DO: "To Do",
+  IN_PROGRESS: "In Progress",
+  IN_REVIEW: "In Review",
+  DONE: "Done",
 };
 
-export const STATUS_MAP: Record<KanbanStatus, task> = {
-  IDEA: "IDEA",
-  TO_DO: "TODO",
-  IN_PROGRESS: "IN_PROGRESS",
-  IN_REVIEW: "IN_REVIEW",
-  DONE: "DONE",
+// Map từ Kanban UI → Prisma Database Status
+export const STATUS_MAP: Record<KanbanStatus, string> = {
+  IDEA: "idea",
+  TO_DO: "todo",
+  IN_PROGRESS: "in_progress",
+  IN_REVIEW: "in_review",
+  DONE: "done",
 };
 
-export const REVERSE_STATUS_MAP: Record<task, KanbanStatus> = {
+// Map ngược từ Prisma Database Status → Kanban UI Status
+export const REVERSE_STATUS_MAP: Record<string, KanbanStatus> = {
   idea: "IDEA",
   todo: "TO_DO",
   in_progress: "IN_PROGRESS",

@@ -143,7 +143,10 @@ export default function CreateTaskDialog() {
       dueDate: values.dueDate ? values.dueDate : new Date(),
       status: values.status.toLowerCase() as any,
     });
-    if (response.success) toast.success(response.message);
+    if (response.success){
+toast.success(response.message);
+     form.reset();
+    } 
     else toast.error(response.message);
     setOpen(false);
   }
