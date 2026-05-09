@@ -10,7 +10,7 @@ import {
 import { updateTask } from "../../../../../lib/actions/task.action";
 import { KanbanStatus, KanTaskType } from "../../../../../types";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import Column from "./BoardColumn";
 
@@ -25,23 +25,35 @@ export default function KanbanBoard({
     setTasks(initialTasks);
   }, [initialTasks]);
 
-  const byCol: Record<KanbanStatus, KanTaskType[]> = {
-    IDEA: [],
-    TO_DO: [],
-    IN_PROGRESS: [],
-    IN_REVIEW: [],
-    DONE: [],
-  };
+  // === SỬA Ở ĐÂY ===
+  const columns = useMemo(() => {
+    const byCol: Record<KanbanStatus, KanTaskType[]> = {
+      IDEA: [],
+      TO_DO: [],
+      IN_PROGRESS: [],
+      IN_REVIEW: [],
+      DONE: [],
+    };
 
-  for (const t of tasks) {
-    byCol[REVERSE_STATUS_MAP[t.status]].push(t);
-  }
+    for (const t of tasks) {
+      const kanbanStatus = REVERSE_STATUS_MAP[t.status];
 
-  const columns = byCol;
+      if (!kanbanStatus) {
+        console.warn(`Unknown status: ${t.status} for task ${t.id}`);
+        // Tạm thời bỏ vào TO_DO hoặc IDEA để không crash
+        byCol.TO_DO.push(t);
+        continue;
+      }
+
+      byCol[kanbanStatus].push(t);
+    }
+
+    return byCol;
+  }, [tasks]);
 
   async function onDragEnd(result: DropResult) {
     const { source, destination } = result;
-    
+
     if (!destination) return;
     if (
       source.droppableId === destination.droppableId &&
@@ -49,24 +61,26 @@ export default function KanbanBoard({
     )
       return;
 
-    // optimistic UI update
+    const newStatus = destination.droppableId as KanbanStatus;
+
+    // Optimistic update
     setTasks((prev) => {
       const copy = Array.from(prev);
       const taskIndex = copy.findIndex((t) => t.id === result.draggableId);
       if (taskIndex === -1) return prev;
 
-      const newStatus = destination.droppableId as KanbanStatus;
-      const moved = { ...copy[taskIndex], status: STATUS_MAP[newStatus] };
-      copy[taskIndex] = moved;
-      return [...copy];
+      copy[taskIndex] = {
+        ...copy[taskIndex],
+        status: STATUS_MAP[newStatus],
+      };
+      return copy;
     });
 
-    // persist to DB
-    const kanbanStatus = destination.droppableId as KanbanStatus;
-    const prismaStatus = STATUS_MAP[kanbanStatus];
+    // Persist to DB
     const task = tasks.find((t) => t.id === result.draggableId);
-
     if (!task) return;
+
+    const prismaStatus = STATUS_MAP[newStatus];
 
     try {
       await updateTask(task.id, {
@@ -77,9 +91,10 @@ export default function KanbanBoard({
         dueDate: task.dueDate,
       });
 
-      toast.success(`Task moved to ${COLUMN_TITLES[kanbanStatus]}`);
+      toast.success(`Task moved to ${COLUMN_TITLES[newStatus]}`);
     } catch {
       toast.error("Failed to update task");
+      // Có thể rollback optimistic update ở đây nếu cần
     }
   }
 
@@ -90,7 +105,11 @@ export default function KanbanBoard({
           <div className="flex gap-4 w-[1650px] pb-20">
             {COLUMN_ORDER.map((c) => (
               <div key={c}>
-                <Column id={c} title={COLUMN_TITLES[c]} tasks={columns[c]} />
+                <Column
+                  id={c}
+                  title={COLUMN_TITLES[c]}
+                  tasks={columns[c as KanbanStatus]}
+                />
               </div>
             ))}
           </div>

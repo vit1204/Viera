@@ -24,16 +24,18 @@ export default function TaskDetailContent({ task: initialTask }: TaskDetailConte
   const handleStatusChange = async (newStatus: string) => {
     try {
       setIsSaving(true);
+      const normalizedStatus = newStatus.toUpperCase();
       await updateTask(task.id, {
         title: task.title,
         description: task.description || "",
-        status: newStatus as "TODO" | "IN_PROGRESS" | "DONE" | "IN_REVIEW" | "IDEA",
+        status: normalizedStatus.toLowerCase() as any,
         priority: task.priority,
         dueDate: task.dueDate,
       });
-      setTask({ ...task, status: newStatus as any });
+      setTask({ ...task, status: normalizedStatus });
       toast.success("Status updated");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to update status");
     } finally {
       setIsSaving(false);

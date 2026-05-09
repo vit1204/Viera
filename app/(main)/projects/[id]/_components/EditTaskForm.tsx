@@ -192,11 +192,11 @@ function EditTaskForm({ task }: { task: Task }) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="TODO">{formatStatusDisplay("TODO")}</SelectItem>
-                  <SelectItem value="IN_PROGRESS">{formatStatusDisplay("IN_PROGRESS")}</SelectItem>
-                  <SelectItem value="DONE">{formatStatusDisplay("DONE")}</SelectItem>
-                  <SelectItem value="IDEA">{formatStatusDisplay("IDEA")}</SelectItem>
-                  <SelectItem value="IN_REVIEW">{formatStatusDisplay("IN_REVIEW")}</SelectItem>
+                  <SelectItem value="todo">{formatStatusDisplay("TODO")}</SelectItem>
+                  <SelectItem value="in_progress">{formatStatusDisplay("IN_PROGRESS")}</SelectItem>
+                  <SelectItem value="done">{formatStatusDisplay("DONE")}</SelectItem>
+                  <SelectItem value="idea">{formatStatusDisplay("IDEA")}</SelectItem>
+                  <SelectItem value="in_review">{formatStatusDisplay("IN_REVIEW")}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
