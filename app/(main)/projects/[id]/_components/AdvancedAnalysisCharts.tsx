@@ -202,7 +202,7 @@ export function AdvancedAnalysisCharts({ data }: AdvancedAnalysisChartsProps) {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-sm font-medium text-muted-foreground">In Progress thanhviet</div>
+              <div className="text-sm font-medium text-muted-foreground">In Progress</div>
               <div className="text-2xl font-bold text-blue-600">{byStatus.inProgress}</div>
               <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                 <div
